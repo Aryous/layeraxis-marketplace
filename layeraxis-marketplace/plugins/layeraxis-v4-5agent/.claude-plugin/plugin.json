@@ -1,0 +1,8 @@
+{
+  "name": "layeraxis-v4-5agent",
+  "description": "SPEC V4 five-agent illustration workflow plugin.",
+  "version": "0.1.0",
+  "author": {
+    "name": "LayerAxis Team"
+  }
+}

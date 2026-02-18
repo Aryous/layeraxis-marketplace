@@ -1,0 +1,9 @@
+# Optional file for review mode in LayerAxis V4 pipeline
+# If absent, pipeline runs in auto mode.
+
+mode: review
+notes:
+  - image: "01"
+    feedback: "这张图情绪更浓一些，减少结构标注"
+  - image: "02"
+    feedback: "保留结构，但增强空间层次"

@@ -1,0 +1,21 @@
+{
+  "name": "layeraxis-marketplace",
+  "metadata": {
+    "description": "LayerAxis illustration workflow plugins, including 3-agent LayerAxis V4 and 5-agent SPEC V4 pipelines."
+  },
+  "owner": {
+    "name": "LayerAxis Team"
+  },
+  "plugins": [
+    {
+      "name": "layeraxis-v4-3agent",
+      "source": "./plugins/layeraxis-v4-3agent",
+      "description": "LayerAxis V4 3-agent pipeline plugin (creative, compiler, render)."
+    },
+    {
+      "name": "layeraxis-v4-5agent",
+      "source": "./plugins/layeraxis-v4-5agent",
+      "description": "SPEC V4 5-agent pipeline plugin (lock, outline, scene, prompt, render)."
+    }
+  ]
+}

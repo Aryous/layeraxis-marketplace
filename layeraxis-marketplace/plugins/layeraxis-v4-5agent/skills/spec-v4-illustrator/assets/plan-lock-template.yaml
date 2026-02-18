@@ -1,0 +1,13 @@
+# plan.lock.yaml Template
+# This file locks global parameters for the entire illustration generation run.
+# Created at the beginning of Step 0.5, before entering Step 1.
+
+density: standard
+style_guide: digital-rationalism
+negative_prompt: "no neon, no cyberpunk, no heavy texture, no harsh shadow, no glossy reflection, no clutter, no photorealism, no high saturation, no English text on the image"
+generation:
+  model: gemini-3-pro-image-preview
+  aspect_ratio: "16:9"
+  image_size: "2K"
+created_at: "2026-02-15T00:00:00Z"
+spec_version: v4
