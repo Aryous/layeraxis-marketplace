@@ -1,7 +1,7 @@
 ---
 name: layeraxis-creative
 description: >
-  LayerAxis V4 创作技能。仅用于 /配图-layeraxis 或 /illustration-layeraxis 的创作阶段。基于 references 中的核心规范与风格指南进行集中创作，输出 imgs-spec/creative-draft.md，不直接执行渲染脚本。
+  LayerAxis V4 创作技能。仅用于 /配图-layeraxis 或 /illustration-layeraxis 的创作阶段。基于 references 中的核心规范与风格指南进行集中创作，只输出 imgs-spec/creative-draft.md。
 ---
 
 ## 目标
@@ -48,9 +48,7 @@ description: >
 
 ## 硬边界
 
-- 不生成图片。
-- 不调用渲染脚本。
-- 不写标准化产物（`plan.lock.yaml`、`outline.md`、`NN-*.md`）。
+- 仅允许创建或修改：`imgs-spec/creative-draft.md`。
 
 ## 质量自检
 
