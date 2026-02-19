@@ -1,2 +1,5 @@
 .env
 .DS_Store
+
+# Local test articles (do not commit)
+从模板到组合：一套 AI 配图系统的架构演进-纯文本.md
