@@ -10,14 +10,15 @@ description: >
 
 ## 必读参考
 
-1. `references/compiler-contract.md`
-2. `references/file-conventions.md`
-3. `references/scoring-rubric.md`
-4. `assets/plan-lock-template.yaml`
+1. `@references/compiler-contract.md`
+2. `@references/file-conventions.md`
+3. `@references/scoring-rubric.md`
+4. `@assets/plan-lock-template.yaml`
 
 ## 输入
 
 - `imgs-spec/creative-draft.md`
+- `imgs-spec/plan.lock.yaml`
 
 ## 输出
 
@@ -36,6 +37,27 @@ description: >
    - `## 概念卡`
    - `## English Prompt`
 4. 文件名按 `NN-{label}-{slug}.md`。
+
+## plan.lock 规范化规则（Phase 1）
+
+`compiler` 是 `plan.lock.yaml` 的 canonical writer，必须整文件重写并遵循模板：
+
+- 模板来源：`@assets/plan-lock-template.yaml`
+- 仅允许以下白名单字段：
+  - `density`
+  - `style_guide`
+  - `negative_prompt`
+  - `generation.model`
+  - `generation.aspect_ratio`
+  - `generation.image_size`
+  - `created_at`
+  - `spec_version`
+- 规则：
+  - 出现白名单外字段时，必须移除
+  - 以现有 `imgs-spec/plan.lock.yaml` 的值为准（来自 orchestrator Phase 2 AUQ），不得擅自改写
+  - 白名单字段缺失时，才按模板默认值补全
+  - 若现有值不满足 Gate 0 值域：停止并回退 orchestrator 重新确认（不要“猜”）
+  - 输出键顺序与模板一致，保证稳定 diff
 
 ## 回退条件
 

@@ -123,7 +123,7 @@ All visible text in Chinese. No English text.
 情绪基调：整体的情绪色彩（如有）
 ```
 
-> 多面板图的详细规范见 @references/multi-panel-spec.md
+> 多面板图的详细规范：TODO（当前版本暂不单独维护 multi-panel spec）
 
 ## 失效规则
 

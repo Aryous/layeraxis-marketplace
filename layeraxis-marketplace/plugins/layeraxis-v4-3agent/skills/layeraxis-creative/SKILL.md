@@ -10,9 +10,9 @@ description: >
 
 ## 必读参考（按顺序）
 
-1. `references/layeraxis-core.md`
-2. `references/style-hard-constraints.md`
-3. `references/style-guides/digital-rationalism.md`
+1. `@references/layeraxis-core.md`
+2. `@references/style-hard-constraints.md`
+3. `@references/style-guides/{style-guide}`
 
 ## 输入
 
@@ -25,7 +25,7 @@ description: >
 
 ## 工作流
 
-1. 按核心规范完成 Step 1-4（拆图、评分、中文场景、风格上色、英文提示词）。
+1. 必须严格按核心规范 @references/layeraxis-core.md 完成 Step 1-4（拆图、brainstorm、评分、中文场景、风格上色、英文提示词等）。
 2. 必须执行风格硬约束，再做创作细化。
 3. 输出为“弱结构草稿”，不强制严格模板，但必须满足最小契约。
 
@@ -53,6 +53,4 @@ description: >
 ## 质量自检
 
 - 情绪层是否避免退化成纯结构图。
-- 是否明确满足 isometric 2.5D 与同一视觉域。
-- 每张图的 English Prompt 是否可独立执行。
 - 是否满足语言约束（除 `English Prompt` 外全部中文）。

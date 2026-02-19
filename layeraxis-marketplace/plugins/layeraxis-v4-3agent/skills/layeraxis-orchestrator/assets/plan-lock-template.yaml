@@ -1,5 +1,5 @@
-# plan.lock.yaml Template (compiler-local copy)
-# NOTE: Keep schema + defaults in sync with orchestrator's bootstrap template.
+# plan.lock.yaml Template (Orchestrator-owned bootstrap)
+# Purpose: initialize global lock fields before creative phase starts.
 
 density: standard # minimal | standard | full
 style_guide: digital-rationalism # current default (single option in this plugin)
@@ -10,4 +10,3 @@ generation:
   image_size: "2K" # 1K | 2K | 4K
 created_at: "2026-02-15T00:00:00Z"
 spec_version: v4
-

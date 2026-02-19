@@ -1,4 +1,4 @@
-# Compiler Contract (LayerAxis V4 Flow)
+# Compiler Contract
 
 ## Input Contract
 
