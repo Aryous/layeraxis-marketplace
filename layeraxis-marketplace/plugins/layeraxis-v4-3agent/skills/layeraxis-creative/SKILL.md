@@ -6,16 +6,16 @@ description: >
 
 ## 目标
 
-让单个创作 Agent 集中算力完成“拆图 + 场景 + 上色 + 英文提示词”，并保持高创作自由度。
+集中精力完成“拆图 + 场景 + 上色 + 英文提示词”，并保持高创作自由度。
 
 ## 必读参考（按顺序）
 
-1. `@references/layeraxis-core.md`
-2. `@references/style-hard-constraints.md`
-3. `@references/style-guides/{style-guide}`
+1. `@references/layeraxis-core.md`(必须全量加载)
+2. `@references/style-hard-constraints.md`(必须全量加载)
+3. `@references/style-guides/{style-guide}`(必须全量加载)
 
 ## 输入
-
+- density{（standard（5～8 张）/full（10～15 张）/minimal（3～6 张）}
 - 文章正文
 - 用户附加偏好（可选）
 

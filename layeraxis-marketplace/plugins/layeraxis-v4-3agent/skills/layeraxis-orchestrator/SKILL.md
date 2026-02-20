@@ -71,6 +71,10 @@ orchestrator──▶ creative ──▶ compiler ──▶ render
 | `generation.aspect_ratio` | `1:1` / `3:4` / `4:3` / `9:16` / `16:9` | 模板默认 |
 | `generation.image_size` | `1K` / `2K` / `4K` | 模板默认 |
 | `style_guide` | 当前仅 `digital-rationalism` | `digital-rationalism` |
+
+**第 3 轮**（不写回 plan.lock.yaml）
+- **`auto`**：全流程连续运行，不暂停。
+- **`review`**：creative 产出后暂停，等待人工反馈再继续。
 </aside>
 
 **写回规则**：
@@ -93,7 +97,7 @@ orchestrator──▶ creative ──▶ compiler ──▶ render
 
 ### Step 3 · 调用 creative-agent-layeraxis · 创意设计
 
-阅读原文，完成配图的创意设计：功能层定位、动态评分、隐喻选择、中文场景构思。
+阅读原文，根据给定的配图参数（density, style-guide, 图片比例），完成配图的创意设计：图片拆分、功能层定位、动态评分、隐喻选择、中文场景构思、英文 Prompt 输出。
 
 |  |  |
 | --- | --- |
@@ -129,7 +133,7 @@ Gate A 通过后暂停，等待人工反馈。
 
 ### Step 4 · compiler-agent-layeraxis · 结构化编译
 
-将 creative 草稿编译为结构化工件：拆分逐张配图、生成大纲、完成中→英翻译、规范化 lock 文件。
+将 creative 草稿编译为结构化工件：拆分逐张配图、生成大纲、规范化 lock 文件。
 
 |  |  |
 | --- | --- |
