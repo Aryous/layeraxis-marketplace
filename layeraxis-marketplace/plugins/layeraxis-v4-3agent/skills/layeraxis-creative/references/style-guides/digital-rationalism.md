@@ -1,6 +1,27 @@
 # 视觉设计风格指南-数字理性主义&人本清晰主义
 > 适用范围：AI Agent / SaaS 产品架构图 / 流程图 / 技术说明插画 / 产品宣传视觉系统
 > 风格定位：冷静理性 × 克制科技感 × 轻人文温度
+
+## 目录
+
+- [一、核心设计哲学（Core Philosophy）](#一核心设计哲学core-philosophy)
+- [二、风格系统（Style System）](#二风格系统style-system)
+- [三、色彩系统（Color System）](#三色彩系统color-system)
+- [四、版式与栅格（Layout & Grid）](#四版式与栅格layout--grid)
+- [五、字体与排版（Typography）](#五字体与排版typography)
+- [六、图形语言（Graphic Language）](#六图形语言graphic-language)
+- [七、插画系统（Illustration System）](#七插画系统illustration-system)
+- [八、流程与连接规范（Flow & Connection）](#八流程与连接规范flow--connection)
+- [九、组件规范（Component System）](#九组件规范component-system)
+- [十、规范约束（Do / Don’t）](#十规范约束do--dont)
+- [十一、生成提示词模板（Prompt Preset）](#十一生成提示词模板prompt-preset)
+- [十二、深色模式扩展建议（Dark Mode）](#十二深色模式扩展建议dark-mode)
+- [十三、标题与标注规范（Title & Annotation）](#十三标题与标注规范title--annotation)
+- [十四、视觉重点强化技巧](#十四视觉重点强化技巧)
+- [十五、参考范例 (The Benchmark)](#十五参考范例-the-benchmark)
+
+---
+
 ## 一、核心设计哲学（Core Philosophy）
 
 本视觉系统旨在平衡两种看似冲突的目标：
@@ -465,3 +486,49 @@ no high saturation
 - **粗箭头**跨越整个画面底部
 - 箭头上下标注关键概念
 - 起点和终点用图标强化
+
+---
+
+## 十五、参考范例 (The Benchmark)
+
+> 以下范例展示了在「数字理性主义」风格下，如何处理最困难的配图场景——用具象图形表达抽象动词。
+> 设计前自检时，请回看这些范例，从中提取排版策略和隐喻手法。
+
+### 范例 1：无界分区 + 物理退化（排版策略 B）
+
+**原文概念**：AI 擅长画名词，不擅长画动词。需要把“时间流逝”翻译成可画的名词。
+
+**排版策略**：无界分区坐标（Borderless Zoning）。画布用中间虚线分为 Left Zone 和 Right Zone，不使用卡片。
+
+**隐喻手法**：
+- 左侧（成功的名词）：一朵边缘锐利、细节完整的枯萎花朵，展示 AI 的具象刻画能力。
+- 右侧（失败的动词 → 翻译为名词）：
+  - Upper area：四个中文字符以`破碎、褰色、半透明`的浅灰轮廓渲染，带虚线碎裂笔划，仿佛正在溶解——这就是“物理退化代偿法”，用材质破损代替抽象概念。
+  - Middle：一条向下弯曲的箭头，旁边标注“翻译为名词”。
+  - Lower area：三个极清晰的具象物件（融化沙漏、飘散日历页、晨昏窗户），等距排列。
+
+**色彩用法**：
+- 结构和背景：冷白 (#f8fafc) + 钢灰 (#4a5568) 占据 90% 画面。
+- 动作强调：电光蓝 (#3b82f6) 仅用于箭头、勾选标记、沙漏中流动的沙粒。
+- 异常警示：琥珀 (#f59e0b) 仅用于标记“失败”的 X 号和窗户中的晨光。
+
+**可复用的写法模式**：
+- 物理退化：`rendered as broken, faded, semi-transparent outlines, with dashed fragmented strokes, as if dissolving`
+- 绝对定位：`Upper area: ... / Middle: ... / Lower area: three small crisp objects in a row, evenly spaced`
+- 颜色就地绑定：`electric blue (#3b82f6) sand particles`、`pale amber (#f59e0b) sunrise light`
+
+### 范例 2：卡片画廊 + 原文意象直接采纳（排版策略 A）
+
+**原文概念**：v1 分类体系的三个问题——图式不够用、风格和结构耦合、隐喻类图没有位置放。
+
+**排版策略**：卡片画廊（Card Gallery）。三张编号白色卡片并排。
+
+**隐喻手法**：
+- 原文自带具象意象时直接采纳，不额外造隐喻。
+- 卡片 1：四个倾斜的文件标签 + 一张找不到匹配位置的悬浮卡片。
+- 卡片 2：两块板被一只手握住无法分开（一块是线框，一块是色板）。
+- 卡片 3：一个打开的盒子（内含柱状图），盒子外一只融化的达利时钟放不进去。
+
+**色彩用法**：
+- 琥珀 (#f59e0b) 仅用于“不匹配/异常”的元素（卡片 1 的悬浮卡片边框）。
+- 其余全部使用低饱和蓝灰。

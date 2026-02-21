@@ -42,45 +42,48 @@ orchestrator──▶ creative ──▶ compiler ──▶ render
 
 ## 执行流程（严格执行）
 
-### Step 1 · orchestrator · 初始化启动锁
+### Step 1 · orchestrator · 全局状态路由与 AUQ (AskUserQuestion)
 
-建立 `imgs-spec/plan.lock.yaml` 作为全局参数契约。
+**1. 状态判断**：检查当前目录下是否存在 `imgs-spec/plan.lock.yaml`。
 
-- 文件不存在 → 按 `@assets/plan-lock-template.yaml` 创建。
-- 文件已存在 → 校验白名单字段，移除未知字段，缺失字段按模板补齐。
+**2. 路由与询问**：
+根据状态判断结果，走不同的 AskUserQuestion 询问流程：
 
-### Step 2 · orchestrator · AUQ（AskUserQuestion） 全局参数确认
+**【分支 A】如果文件已存在（已有全局配置）：**
+说明此时为断点续跑或用户已自行准备好配置。**跳过所有参数配置询问**，直接进行第 3 轮：运行模式确认。
 
-用最小交互锁定本次出图的全局参数，写回 `plan.lock.yaml`。
-
-**交互规则**：优先使用模板默认值。只有当用户主动要求修改时，才进入自定义流程，1-2 轮对话一次性收集。
-
+**【分支 B】如果文件不存在（全新配图）：**
+此时需要进行参数收集（共 2 轮问答）：
 <aside>
-使用 AskUserQuestion 对用户进行确认（共 3 轮问答）
-**第 1 轮**（二选一）
+**第 1 轮**（二选一）：
+- [`使用默认参数(推荐)`]：跳过第 2 轮询问。
+- [`自定义参数`]
 
-- **默认（推荐）**：使用模板默认值，跳过第 2 轮。
-- **自定义**：进入第 2 轮。
-
-**第 2 轮**（仅自定义时触发）
+**第 2 轮**（仅选择“自定义参数”时触发）：
+收集以下选项：
 
 | 参数 | 可选值 | 默认值 |
 | --- | --- | --- |
-| `density` | `minimal` / `standard` / `full` | 模板默认 |
+| `density` | `minimal(3~6)` / `standard(5~8)` / `full(10~15)` | 模板默认 |
 | `generation.model` | `gemini-3-pro-image-preview` / `gemini-2.0-flash-preview-image-generation` / `imagen-4-ultra-generate-001` / `imagen-4-generate-001` | `gemini-3-pro-image-preview` |
 | `generation.aspect_ratio` | `1:1` / `3:4` / `4:3` / `9:16` / `16:9` | 模板默认 |
 | `generation.image_size` | `1K` / `2K` / `4K` | 模板默认 |
 | `style_guide` | 当前仅 `digital-rationalism` | `digital-rationalism` |
+</aside>
 
-**第 3 轮**（不写回 plan.lock.yaml）
+**3. 运行模式确认（针对所有分支的最后 1 轮问答）**：
+<aside>
+询问并确认运行模式（此选择仅控制调度逻辑，不写回配置文件）：
 - **`auto`**：全流程连续运行，不暂停。
 - **`review`**：creative 产出后暂停，等待人工反馈再继续。
 </aside>
 
-**写回规则**：
+---
 
-- 仅写入白名单字段，键顺序与模板一致，保证稳定 diff。
-- 用户给出的值不在合法范围内 → 停止并要求重新选择，不猜测。
+### Step 2 · orchestrator · 生成启动锁 (plan.lock.yaml)
+
+- **分支 A（已有文件）的收尾**：仅校验已有文件的字段，清理未知字段并补齐缺失默认值后覆写。
+- **分支 B（新建文件）的收尾**：在内存中组装完参数后，**一次性写回** `imgs-spec/plan.lock.yaml`，作为后续流程的唯一契约。
 
 ---
 
@@ -97,7 +100,14 @@ orchestrator──▶ creative ──▶ compiler ──▶ render
 
 ### Step 3 · 调用 creative-agent-layeraxis · 创意设计
 
-阅读原文，根据给定的配图参数（density, style-guide, 图片比例），完成配图的创意设计：图片拆分、功能层定位、动态评分、隐喻选择、中文场景构思、英文 Prompt 输出。
+**执行逻辑：**
+使用工具调用 `creative-agent-layeraxis`。向它提供以下清晰的上下文和指令：
+1. **提供原文路径**：需要配图的文章源文件路径。
+2. **传递参数**：从 `plan.lock.yaml` 中读取并传递硬约束：
+   - `density`
+   - `style_guide`
+   - `generation.aspect_ratio`
+3. **下达任务**：“请阅读原文，根据给定的配图参数完成创意设计，必须执行设计前自检并在 `imgs-spec/creative-draft.md` 中输出你的草稿。”
 
 |  |  |
 | --- | --- |
