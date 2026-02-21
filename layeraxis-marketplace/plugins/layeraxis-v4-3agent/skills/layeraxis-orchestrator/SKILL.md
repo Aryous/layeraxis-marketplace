@@ -1,14 +1,14 @@
 ---
 name: layeraxis-orchestrator
-description: LayerAxis V4 配图编排技能。调度 creative-agent-layeraxis → compiler-agent-layeraxis → render-agent-layeraxis 三级流水线。
+description: LayerAxis V4 配图编排技能。调度 creative-agent-layeraxis → render-agent-layeraxis 两级流水线。
 ---
 ## 概览
-orchestrator 是一条三级 agent 流水线的编排层，自身不生成内容，只负责初始化、参数确认、调度和失败回退。
+orchestrator 是一条两级 agent 流水线的编排层，自身不生成内容，只负责初始化、参数确认、调度和失败回退。
 ```
-orchestrator──▶ creative ──▶ compiler ──▶ render
-                    │              │            │
-               creative-draft  outline.md    *.png
-                   .md         NN-*.md    summary.json
+orchestrator──▶ creative ──▶ render
+                    │            │
+               outline.md    *.png
+               NN-*.md    summary.json
 ```
 **两种模式**：
 - **`auto`**：全流程连续运行，不暂停。
@@ -25,16 +25,15 @@ orchestrator──▶ creative ──▶ compiler ──▶ render
 | `@assets/plan-lock-template.yaml` | plan.lock 初始化模板 |
 | `@references/pipeline-gates.md` | Gate 校验标准（单一来源） |
 | `@assets/review-feedback-template.yaml` | review 反馈格式模板 |
-| `imgs-spec/review-feedback.yaml` | 仅 review 模式：用户按 `@assets/review-feedback-template.yaml` 手动创建，放入 `imgs-spec/` 后恢复流程。文件不存在则跳过反馈直接进入 compiler。 |
+| `imgs-spec/review-feedback.yaml` | 仅 review 模式：用户按 `@assets/review-feedback-template.yaml` 手动创建，放入 `imgs-spec/` 后恢复流程。文件不存在则跳过反馈直接进入 render 阶段。 |
 
 ### 输出
 
 | 文件 | 产出者 | 说明 |
 | --- | --- | --- |
-| `imgs-spec/plan.lock.yaml` | orchestrator → compiler | 全局参数契约 |
-| `imgs-spec/creative-draft.md` | creative | 创意设计草稿 |
-| `imgs-spec/outline.md` | compiler | 配图大纲 |
-| `imgs-spec/NN-*.md` | compiler | 逐张配图的结构化描述（含英文提示词） |
+| `imgs-spec/plan.lock.yaml` | orchestrator | 全局参数契约 |
+| `imgs-spec/outline.md` | creative | 配图大纲 |
+| `imgs-spec/NN-*.md` | creative | 逐张配图的结构化描述与英文提示词 |
 | `imgs-spec/*.png` | render | 生成的图片 |
 | `imgs-spec/generation-summary.json` | render | 生成摘要（模型、耗时、参数、状态） |
 
@@ -107,13 +106,13 @@ orchestrator──▶ creative ──▶ compiler ──▶ render
    - `density`
    - `style_guide`
    - `generation.aspect_ratio`
-3. **下达任务**：“请阅读原文，根据给定的配图参数完成创意设计，必须执行设计前自检并在 `imgs-spec/creative-draft.md` 中输出你的草稿。”
+3. **下达任务**：“请阅读原文（原文路径为：{原文路径}），根据给定的配图参数完成创意设计，必须执行设计前自检并在 `imgs-spec/` 目录中输出你的 outline 和 NN-slug 草稿。”
 
 |  |  |
 | --- | --- |
 | **读取** | 文章源文件、`plan.lock.yaml`（只读） |
 | **硬约束** | orchestrator 传入 `density`、`style_guide`、`generation.aspect_ratio` |
-| **产出** | `imgs-spec/creative-draft.md` |
+| **产出** | `imgs-spec/outline.md`, `imgs-spec/NN-*.md` |
 
 ---
 
@@ -132,7 +131,7 @@ Gate A 通过后暂停，等待人工反馈。
 
 - **有反馈**（`imgs-spec/review-feedback.yaml` 存在且未消费）：
     1. 将反馈注入 creative，重新处理。
-    2. creative 覆盖 `creative-draft.md`。
+    2. creative 依据反馈更新相关文件。
     3. 标记反馈文件为已消费（`consumed: true`）。
     4. 重新通过 Gate A 后继续。
 - **无反馈**：直接进入 Step 4。
@@ -141,33 +140,7 @@ Gate A 通过后暂停，等待人工反馈。
 
 ---
 
-### Step 4 · compiler-agent-layeraxis · 结构化编译
-
-将 creative 草稿编译为结构化工件：拆分逐张配图、生成大纲、规范化 lock 文件。
-
-|  |  |
-| --- | --- |
-| **读取** | `creative-draft.md`、`plan.lock.yaml`（权威输入） |
-| **产出** | `outline.md`、`NN-*.md`（含英文提示词）、规范化后的 `plan.lock.yaml` |
-
-**约束**：
-
-- 对 `plan.lock.yaml` 只做格式规范化（排序、补默认值、结构对齐），**不改 AUQ 确认的参数值**。
-- 翻译严格执行"设计与翻译分离"：不增删物件、不改布局、不改颜色，只做语言转换。
-- 每张英文提示词须包含：负向提示词、语言声明、inline 颜色标注。
-
----
-
-### Gate B · compiler 产出校验
-
-校验标准：`@references/pipeline-gates.md`
-
-- ✅ 通过 → 进入 Step 5。
-- ❌ 失败 → 回退 Step 4，补齐后重新过 Gate B。
-
----
-
-### Step 5 · 调用 render-agent-layeraxis · 出图与回写
+### Step 4 · 调用 render-agent-layeraxis · 出图与回写
 
 按结构化工件逐张调用图像生成 API，执行出图并回写摘要。
 
@@ -186,12 +159,11 @@ Gate A 通过后暂停，等待人工反馈。
 
 ## Subagent 交互矩阵
 
-|  | plan.lock | [creative-draft.md](http://creative-draft.md) | [outline.md](http://outline.md) | NN-*.md | *.png | summary.json |
-| --- | --- | --- | --- | --- | --- | --- |
-| **orchestrator** | 写（启动锁） | — | — | — | — | — |
-| **creative** | 读 | 写 | — | — | — | — |
-| **compiler** | 规范化写 | 读 | 写 | 写 | — | — |
-| **render** | 读 | — | — | 读 | 写 | 写 |
+|  | plan.lock | outline.md | NN-*.md | *.png | summary.json |
+| --- | --- | --- | --- | --- | --- |
+| **orchestrator** | 写（启动锁） | — | — | — | — |
+| **creative** | 读 | 写 | 写 | — | — |
+| **render** | 读 | — | 读 | 写 | 写 |
 - 表示该 agent 不接触此文件。
 
 ---
@@ -221,12 +193,10 @@ Gate A 通过后暂停，等待人工反馈。
 | --- | --- | --- |
 | orchestrator | 启动写入 | Step 1 创建初始锁 |
 | creative | 只读 | 读取参数，不写锁文件 |
-| compiler | 规范化写入 | 最终格式规范化（不改 AUQ 值） |
 | render | 只读 | 读取参数执行，不改锁文件 |
 
 ### 冲突规则
 
-- 格式层面的冲突（排序、缺失默认值）→ 以 compiler 最终输出为准。
 - AUQ 确认的参数值 → 任何阶段不得覆盖。
 
 ---
@@ -237,7 +207,6 @@ Gate A 通过后暂停，等待人工反馈。
 | --- | --- | --- |
 | Gate 0 | Step 1 | 重建或清洗 lock 文件，重新执行 Step 2 |
 | Gate A | Step 3 | creative 补齐草稿后重新过 Gate A |
-| Gate B | Step 4 | compiler 补齐结构化文件后重新过 Gate B |
 
 ---
 
