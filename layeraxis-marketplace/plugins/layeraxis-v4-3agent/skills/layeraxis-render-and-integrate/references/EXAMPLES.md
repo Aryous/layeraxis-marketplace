@@ -75,12 +75,74 @@ All visible text in Chinese. No English text.
 
 ---
 
-## 示例 2-5：待补充
+## 示例 2：锚定层 - 物理隐喻（动词转名词的完美示范）
+
+### 原始需求背景
+系统设定中有一个核心哲学：「AI 擅长渲染具象物件，无法直接描绘抽象过程（画名词，不画动词）」。需要一张图向用户解释这个概念。左边代表成功的「名词」，右边代表失败的「动词」，随后动词被翻译成名词。
+
+### Step 1 分析
+
+```
+功能层：锚定层（用一个画面把抽象洞察钉住）
+结构骨架: 55 / 隐喻包装: 80 / 情绪修辞: 30
+依据：
+- 结构 55：天然的左右对比结构，不需要复杂编排。
+- 隐喻包装 80：核心难题是如何画「画不出的动词」。必须用高度具体的物理细节来隐喻「渲染失败 / 概念抽象」。
+- 情绪修辞 30：客观陈述规律，不需要浓烈情绪。
+```
+
+### Step 2 场景设计（中文）
+
+**隐喻包装（80，深度设计 - 将抽象「画不出」转换为物理「破损/消散」）：**
+- 绝对不要让 AI 画「模糊的云团」或「抽象的齿轮」来代表动词。
+- **神来之笔：** 将中文字符本身视为物理物件，给它施加「渲染失败」的物理状态——断裂的笔画、褪色的边框、半透明的质感。这本身就是一个可画的名词状态。
+- 左侧「名词」：一朵极其具象、边缘锐利的枯萎蓝花，展现 AI 强大的具象刻画能力。
+- 右侧「动词翻译」：消散的文字顺着箭头，转化为三个极度清晰的实体隐喻（沙粒流动的沙漏、散落的日历、晨昏交替的窗户）。
+
+**结构骨架（55，标准规范接入）：**
+- 左右两张标准的带边框、带阴影的白色卡片，左上角标数字 1 和 2。
+- 严格的网格化编排：上部标签、中部核心物/过程、下部结果，等距对齐。
+
+### 最终提示词
+
+```
+Wide horizontal composition (16:9), split into two rectangular white cards side by side on a cool white background (#f8fafc) with a faint dot grid. Each card has a white fill, rounded corners (radius 12), thin gray border (#e2e8f0), and a soft dual-layer shadow.
+
+--- Card 1 (Left) ---
+Large bold number "1" at top left, Chinese title "名词" below in dark navy (#1a2332).
+Center: a single wilting flower in isometric 2.5D vector style, petals drooping and curling downward, stem slightly bent, drawn with crisp steel gray (#4a5568) outlines, petals filled with pale ice blue (#e0f2fe), stem and leaves in light gray (#f1f5f9). Lines are razor-sharp and perfectly rendered.
+A small electric blue (#3b82f6) checkmark icon near the top-right of the flower.
+
+--- Card 2 (Right) ---
+Large bold number "2" at top left, Chinese title "动词" below in dark navy (#1a2332).
+Upper area: four Chinese characters "时间流逝" rendered as broken, faded, semi-transparent outlines in very light gray (#e2e8f0), with dashed fragmented strokes, as if the text is dissolving and cannot be fully rendered. A small amber (#f59e0b) X mark beside the fading text.
+Middle: a gentle downward curved arrow in electric blue (#3b82f6), with a small annotation beside it: Chinese text "翻译为名词" in electric blue (#3b82f6).
+Lower area: three small crisp objects in a row, evenly spaced, each drawn in sharp steel gray (#4a5568) outlines with electric blue (#3b82f6) detail accents, each with a small blue checkmark above:
+  Object 1: a melting hourglass, glass walls slightly warped, sand grains flowing, electric blue (#3b82f6) sand particles.
+  Object 2: a few calendar pages scattering and floating off an open calendar, page corners highlighted in electric blue (#3b82f6).
+  Object 3: a window frame, left half showing warm sunrise light in pale amber (#f59e0b), right half showing deep navy night sky (#1a2332), with a subtle gradient transition.
+
+Below both cards, a horizontal dashed line in electric blue (#3b82f6) spanning the full width. Centered Chinese annotation text beneath: "配图的核心工作：把动词翻译成名词" in electric blue (#3b82f6).
+
+Isometric 2.5D vector illustration, low-saturation blue-gray palette, razor-clean edges, minimal SaaS product diagram style, lots of whitespace. All visible text in Chinese.
+```
+
+### 效果点评
+
+极佳。这是一次对「AI 画名词不画动词」哲学最彻底的贯彻。在表达「不可画」的概念时，没有使用模糊抽象词，而是创造性地将其转化为「正在碎裂、消散的物理碎片（ broken, faded, semi-transparent outlines）」。结合严格的卡片容器和空间方位锚定，成品既有思想深度，又完美符合 Digital Rationalism 的精确控制感。
+
+### 可复用的模式（High-Value Asset）
+
+*   **物理退化代偿法：** 当需要表达「抽象、失败、不可见、不确定」时，**禁止使用 `blurry` / `abstract` / `chaos`**。改为给一个具体物件附加**物理退化状态**：如 `broken` (破碎)、`dashed fragmented strokes` (虚线碎裂的笔划)、`dissolving` (溶解)、`semi-transparent` (半透明)。
+*   **极致的方位约束：** 在复杂的图示中，像写 HTML/CSS 一样写提示词。使用明确的方位前缀（如 `Upper area:`, `Middle:`, `Lower area: three small crisp objects in a row, evenly spaced`），将 AI 的构图自由度降到最低。
+*   **Inline Color（就地着色）：** 在描述所有关键物件时，将颜色 HEX 代码紧跟在名词后方（例：`electric blue (#3b82f6) sand particles`），确保复杂画面下的色彩不串位。
+
+---
+
+## 示例 3-5：待补充
 
 > 随着更多配图实践积累，逐步补充以下类型的示例：
-> - 锚定层 - 隐喻驱动（原文纯抽象，需要 brainstorm 创造隐喻）
 > - 情绪层 - 情绪驱动（以感受为核心的配图）
-> - 混合型 - 结构+隐喻高分（两个维度同时深度展开）
 > - 失败案例 - 复盘（提示词写得不好的例子，分析原因）
 
 每次迭代修正中发现的好案例或典型失败，都可以沉淀到这里。

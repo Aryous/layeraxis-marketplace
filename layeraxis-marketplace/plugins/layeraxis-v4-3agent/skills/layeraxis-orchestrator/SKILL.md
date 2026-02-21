@@ -49,14 +49,14 @@ orchestrator──▶ creative ──▶ compiler ──▶ render
 - 文件不存在 → 按 `@assets/plan-lock-template.yaml` 创建。
 - 文件已存在 → 校验白名单字段，移除未知字段，缺失字段按模板补齐。
 
-### Step 2 · orchestrator · AUQ 全局参数确认
+### Step 2 · orchestrator · AUQ（AskUserQuestion） 全局参数确认
 
 用最小交互锁定本次出图的全局参数，写回 `plan.lock.yaml`。
 
 **交互规则**：优先使用模板默认值。只有当用户主动要求修改时，才进入自定义流程，1-2 轮对话一次性收集。
 
 <aside>
-使用 AskUserQuestion 对用户进行确认
+使用 AskUserQuestion 对用户进行确认（共 3 轮问答）
 **第 1 轮**（二选一）
 
 - **默认（推荐）**：使用模板默认值，跳过第 2 轮。
@@ -157,7 +157,7 @@ Gate A 通过后暂停，等待人工反馈。
 
 ---
 
-### Step 5 · render-agent-layeraxis · 出图与回写
+### Step 5 · 调用 render-agent-layeraxis · 出图与回写
 
 按结构化工件逐张调用图像生成 API，执行出图并回写摘要。
 
