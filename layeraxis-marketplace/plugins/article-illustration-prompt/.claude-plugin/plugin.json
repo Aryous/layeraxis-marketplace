@@ -1,0 +1,8 @@
+{
+  "name": "article-illustration-prompt",
+  "description": "Generate Nano Banana Pro image prompts for article illustrations following the Digital Rationalism × Human-Centered Minimalism visual style.",
+  "version": "0.1.0",
+  "author": {
+    "name": "LayerAxis Team"
+  }
+}

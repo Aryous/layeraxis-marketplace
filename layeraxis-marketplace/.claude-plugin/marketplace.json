@@ -16,6 +16,11 @@
       "name": "layeraxis-v4-5agent",
       "source": "./plugins/layeraxis-v4-5agent",
       "description": "SPEC V4 5-agent pipeline plugin (lock, outline, scene, prompt, render)."
+    },
+    {
+      "name": "article-illustration-prompt",
+      "source": "./plugins/article-illustration-prompt",
+      "description": "Single-skill prompt generator for article illustrations using Digital Rationalism visual style."
     }
   ]
 }
