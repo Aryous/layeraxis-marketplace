@@ -1,9 +1,10 @@
 # LayerAxis Marketplace
 
-LayerAxis 的 Claude Code 本地插件市场，提供两套可并行维护的配图架构：
+LayerAxis 的 Claude Code 本地插件市场，提供两套配图流水线和一个独立提示词生成器：
 
-- `layeraxis-v4-3agent`：LayerAxis V4（三阶段，创意优先）
+- `layeraxis-v4-3agent`：LayerAxis V4（两阶段，creative → render）
 - `layeraxis-v4-5agent`：SPEC V4（五阶段，结构化更强）
+- `article-illustration-prompt`：单 Skill，直接输出 Nano Banana Pro 提示词
 
 ## 目录结构
 
@@ -14,12 +15,15 @@ layeraxis-marketplace/
   plugins/
     layeraxis-v4-3agent/
       .claude-plugin/plugin.json
-      agents/
-      skills/
+      agents/                        # creative-agent, render-agent
+      skills/                        # layeraxis-orchestrator, layeraxis-creative, layeraxis-render-and-integrate
     layeraxis-v4-5agent/
       .claude-plugin/plugin.json
-      agents/
+      agents/                        # lock, outline, scene, prompt, render
       skills/
+    article-illustration-prompt/
+      .claude-plugin/plugin.json
+      skills/article-illustration-prompt/
 ```
 
 ## 前置条件
@@ -34,61 +38,57 @@ layeraxis-marketplace/
 1. 添加 marketplace
 
 ```bash
-claude plugin marketplace add /Users/aryous/Documents/Code/配图技能重构/layeraxis-marketplace
+claude plugin marketplace add /path/to/layeraxis-marketplace
 ```
 
-2. 查看 marketplace 列表
+2. 安装插件
 
 ```bash
-claude plugin marketplace list
-```
-
-3. 安装插件（建议 `project` 作用域）
-
-```bash
+# 自动化流水线（按需选一）
 claude plugin install layeraxis-v4-3agent@layeraxis-marketplace --scope project
 claude plugin install layeraxis-v4-5agent@layeraxis-marketplace --scope project
+
+# 单 Skill 提示词生成器
+claude plugin install article-illustration-prompt@layeraxis-marketplace --scope project
 ```
 
-4. 查看已安装插件
+3. 查看已安装插件
 
 ```bash
 claude plugin list
 ```
 
-## 两套流程如何选择
+## 三个插件如何选择
 
-### layeraxis-v4-3agent（创意集中）
+### layeraxis-v4-3agent（自动化流水线，推荐）
 
-- 编排链路：`creative-agent-layeraxis -> compiler-agent-layeraxis -> render-agent-layeraxis`
-- 适合：希望把算力集中在创作阶段，减少上下文切换
-- 典型触发词：`/配图-layeraxis`、`/illustration-layeraxis`
+- 编排链路：`creative-agent → render-agent`
+- 适合：一篇文章全量配图，自动批量出图并回写文章
+- 触发词：`/layeraxis-v4-3agent:layeraxis-orchestrator`
 
-### layeraxis-v4-5agent（结构化分工）
+### article-illustration-prompt（单张交互式，轻量）
 
-- 编排链路：`lock-agent -> outline-agent -> scene-agent -> prompt-agent -> render-agent`
-- 适合：需要强门控、阶段可回放、精细故障定位
-- 典型触发词：`/配图`、`/spec-v4-illustrator`
+- 无流水线，Claude 直接输出提示词，用户手动粘贴到 Nano Banana Pro
+- 适合：单张配图设计、交互式调整、快速验证创意
+- 触发词：`/article-illustration-prompt:article-illustration-prompt`
+
+### layeraxis-v4-5agent（强门控，精细调试）
+
+- 编排链路：`lock → outline → scene → prompt → render`
+- 适合：需要阶段可回放、精细故障定位
+- 触发词：`/layeraxis-v4-5agent:spec-v4-illustrator`
 
 ## 更新与卸载
 
-更新 marketplace 与插件：
-
 ```bash
-claude plugin marketplace update layeraxis-marketplace
+# 更新
 claude plugin update layeraxis-v4-3agent
-claude plugin update layeraxis-v4-5agent
-```
+claude plugin update article-illustration-prompt
 
-卸载插件：
-
-```bash
+# 卸载
 claude plugin uninstall layeraxis-v4-3agent
-claude plugin uninstall layeraxis-v4-5agent
-```
+claude plugin uninstall article-illustration-prompt
 
-移除 marketplace：
-
-```bash
+# 移除 marketplace
 claude plugin marketplace remove layeraxis-marketplace
 ```

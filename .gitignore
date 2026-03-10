@@ -1,5 +1,22 @@
 .env
 .DS_Store
 
-# Local test articles (do not commit)
-从模板到组合：一套 AI 配图系统的架构演进-纯文本.md
+# Local skills (not part of marketplace)
+.claude/
+.baoyu-skills/
+
+# Test articles
+test-articles/
+
+# Generated outputs
+test-outputs/
+
+# Reference docs & images
+docs/
+
+# Archive
+archive/
+
+# Misc
+AGENTS.md
+project_understanding.md
