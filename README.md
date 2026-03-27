@@ -1,94 +1,99 @@
 # LayerAxis Marketplace
 
-LayerAxis 的 Claude Code 本地插件市场，提供两套配图流水线和一个独立提示词生成器：
+A [Claude Code](https://docs.anthropic.com/en/docs/claude-code) plugin marketplace for **automated article illustration** — paste an article, get publication-ready images.
 
-- `layeraxis-v4-3agent`：LayerAxis V4（两阶段，creative → render）
-- `layeraxis-v4-5agent`：SPEC V4（五阶段，结构化更强）
-- `article-illustration-prompt`：单 Skill，直接输出 Nano Banana Pro 提示词
+It ships three plugins with different levels of automation:
 
-## 目录结构
+| Plugin | What it does | Automation |
+|--------|-------------|------------|
+| **layeraxis-v4-3agent** | Two-agent pipeline (creative → render). Reads an article, designs all illustrations, and batch-generates images via Gemini. | Full auto |
+| **article-illustration-prompt** | Outputs a single image prompt you can paste into any image generator. | Interactive |
+| **layeraxis-v4-5agent** | Five-agent gated pipeline with per-stage checkpoints. More control, more knobs. | Full auto |
 
-```text
+## How it works
+
+1. You give Claude an article (Markdown / URL / pasted text)
+2. The **creative agent** (Opus) reads the full article, identifies where illustrations add value, and designs each image — composition, metaphor, color palette, English prompt
+3. The **render agent** (Haiku) runs a generation script against Gemini's image API and inserts the results back into the article
+
+The visual style follows a "Digital Rationalism × Human-Centered Minimalism" guide — muted palettes, CSS-level layout precision, physical-material metaphors instead of abstract clip art.
+
+## Prerequisites
+
+- [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code) installed (`claude` command available)
+- A `GOOGLE_API_KEY` with Gemini image generation access (for the render step)
+  - Put it in a `.env` file at your project root, or `export GOOGLE_API_KEY=...`
+
+## Quick start
+
+```bash
+# 1. Register the marketplace
+claude plugin marketplace add /path/to/layeraxis-marketplace
+
+# 2. Install a plugin (pick one)
+claude plugin install layeraxis-v4-3agent@layeraxis-marketplace --scope project
+
+# 3. Run it — type the trigger in a Claude Code session
+/layeraxis-v4-3agent:layeraxis-orchestrator
+```
+
+## Choosing a plugin
+
+### layeraxis-v4-3agent (recommended)
+
+Two-agent automated pipeline. Best for full-article illustration in one shot.
+
+- Pipeline: `creative-agent (Opus) → render-agent (Haiku)`
+- Trigger: `/layeraxis-v4-3agent:layeraxis-orchestrator`
+- Outputs: `imgs-spec/` directory with designed prompts + generated PNGs
+
+### article-illustration-prompt (lightweight)
+
+No pipeline. Claude outputs a single prompt following the style guide — you paste it into Nano Banana Pro or any image generator.
+
+- Trigger: `/article-illustration-prompt:article-illustration-prompt`
+- Good for: one-off images, iterating on a single illustration, quick experiments
+
+### layeraxis-v4-5agent (advanced)
+
+Five-stage gated pipeline: `lock → outline → scene → prompt → render`. Each stage writes to disk and can be inspected / replayed independently.
+
+- Trigger: `/layeraxis-v4-5agent:spec-v4-illustrator`
+- Good for: debugging prompt quality, fine-grained control over each design phase
+
+## Directory structure
+
+```
 layeraxis-marketplace/
   .claude-plugin/
-    marketplace.json
+    marketplace.json              # Marketplace manifest
   plugins/
     layeraxis-v4-3agent/
       .claude-plugin/plugin.json
-      agents/                        # creative-agent, render-agent
-      skills/                        # layeraxis-orchestrator, layeraxis-creative, layeraxis-render-and-integrate
+      agents/                     # creative-agent, render-agent
+      skills/                     # orchestrator, creative, render-and-integrate
     layeraxis-v4-5agent/
       .claude-plugin/plugin.json
-      agents/                        # lock, outline, scene, prompt, render
+      agents/                     # lock, outline, scene, prompt, render
       skills/
     article-illustration-prompt/
       .claude-plugin/plugin.json
       skills/article-illustration-prompt/
 ```
 
-## 前置条件
-
-- 已安装 Claude Code CLI（`claude` 命令可用）
-- 出图阶段需要可用的 `GOOGLE_API_KEY`
-  - 推荐放在项目根目录 `.env`
-  - 或通过环境变量导出：`export GOOGLE_API_KEY=...`
-
-## 快速开始
-
-1. 添加 marketplace
+## Update & uninstall
 
 ```bash
-claude plugin marketplace add /path/to/layeraxis-marketplace
-```
-
-2. 安装插件
-
-```bash
-# 自动化流水线（按需选一）
-claude plugin install layeraxis-v4-3agent@layeraxis-marketplace --scope project
-claude plugin install layeraxis-v4-5agent@layeraxis-marketplace --scope project
-
-# 单 Skill 提示词生成器
-claude plugin install article-illustration-prompt@layeraxis-marketplace --scope project
-```
-
-3. 查看已安装插件
-
-```bash
-claude plugin list
-```
-
-## 三个插件如何选择
-
-### layeraxis-v4-3agent（自动化流水线，推荐）
-
-- 编排链路：`creative-agent → render-agent`
-- 适合：一篇文章全量配图，自动批量出图并回写文章
-- 触发词：`/layeraxis-v4-3agent:layeraxis-orchestrator`
-
-### article-illustration-prompt（单张交互式，轻量）
-
-- 无流水线，Claude 直接输出提示词，用户手动粘贴到 Nano Banana Pro
-- 适合：单张配图设计、交互式调整、快速验证创意
-- 触发词：`/article-illustration-prompt:article-illustration-prompt`
-
-### layeraxis-v4-5agent（强门控，精细调试）
-
-- 编排链路：`lock → outline → scene → prompt → render`
-- 适合：需要阶段可回放、精细故障定位
-- 触发词：`/layeraxis-v4-5agent:spec-v4-illustrator`
-
-## 更新与卸载
-
-```bash
-# 更新
+# Update
 claude plugin update layeraxis-v4-3agent
-claude plugin update article-illustration-prompt
 
-# 卸载
+# Uninstall
 claude plugin uninstall layeraxis-v4-3agent
-claude plugin uninstall article-illustration-prompt
 
-# 移除 marketplace
+# Remove the marketplace entirely
 claude plugin marketplace remove layeraxis-marketplace
 ```
+
+## License
+
+[MIT](LICENSE)
