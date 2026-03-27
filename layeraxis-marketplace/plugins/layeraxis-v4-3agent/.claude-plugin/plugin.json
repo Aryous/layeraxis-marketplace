@@ -1,8 +1,9 @@
 {
   "name": "layeraxis-v4-3agent",
-  "description": "LayerAxis V4 three-agent illustration workflow plugin.",
-  "version": "0.1.0",
+  "description": "LayerAxis V4 two-agent illustration pipeline (creative → render).",
+  "version": "0.2.0",
   "author": {
-    "name": "LayerAxis Team"
-  }
+    "name": "Aryous"
+  },
+  "repository": "https://github.com/Aryous/layeraxis-marketplace"
 }

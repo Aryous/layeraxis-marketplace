@@ -1,26 +1,33 @@
 {
   "name": "layeraxis-marketplace",
   "metadata": {
-    "description": "LayerAxis illustration workflow plugins, including 3-agent LayerAxis V4 and 5-agent SPEC V4 pipelines."
+    "description": "LayerAxis illustration workflow plugins — a 2-agent automated pipeline, a 5-agent gated pipeline, and a standalone prompt generator.",
+    "version": "0.2.0"
   },
   "owner": {
-    "name": "LayerAxis Team"
+    "name": "Aryous"
   },
   "plugins": [
     {
       "name": "layeraxis-v4-3agent",
       "source": "./plugins/layeraxis-v4-3agent",
-      "description": "LayerAxis V4 3-agent pipeline plugin (creative, compiler, render)."
+      "description": "LayerAxis V4 two-agent pipeline (creative → render). Reads an article, designs illustrations, and batch-generates images.",
+      "keywords": ["illustration", "pipeline", "image-generation", "layeraxis"],
+      "category": "content-creation"
     },
     {
       "name": "layeraxis-v4-5agent",
       "source": "./plugins/layeraxis-v4-5agent",
-      "description": "SPEC V4 5-agent pipeline plugin (lock, outline, scene, prompt, render)."
+      "description": "SPEC V4 five-agent gated pipeline (lock → outline → scene → prompt → render). Offers fine-grained checkpoints and stage replay.",
+      "keywords": ["illustration", "pipeline", "image-generation", "spec-v4"],
+      "category": "content-creation"
     },
     {
       "name": "article-illustration-prompt",
       "source": "./plugins/article-illustration-prompt",
-      "description": "Single-skill prompt generator for article illustrations using Digital Rationalism visual style."
+      "description": "Standalone prompt generator for article illustrations using Digital Rationalism × Human-Centered Minimalism visual style.",
+      "keywords": ["illustration", "prompt", "nano-banana-pro", "style-guide"],
+      "category": "content-creation"
     }
   ]
 }
