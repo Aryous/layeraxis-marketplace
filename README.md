@@ -1,3 +1,5 @@
+[English](README.md) | [中文](README.zh-CN.md)
+
 # LayerAxis Marketplace
 
 A [Claude Code](https://docs.anthropic.com/en/docs/claude-code) plugin marketplace for **automated article illustration** — paste an article, get publication-ready images.
