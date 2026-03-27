@@ -20,6 +20,25 @@ It ships three plugins with different levels of automation:
 
 The visual style follows a "Digital Rationalism × Human-Centered Minimalism" guide — muted palettes, CSS-level layout precision, physical-material metaphors instead of abstract clip art.
 
+## Design philosophy
+
+This system evolved through five architecture iterations. The lessons behind the current design:
+
+**Why not one agent?** A single agent doing analysis, brainstorming, scene design, style application, translation, and image generation in one context leads to cognitive overload. It consistently drops spatial precision (absolute coordinates) and color placement (inline hex values) — the two things that separate a good illustration from a generic one.
+
+**Why not five agents?** The opposite extreme — splitting the creative process into lock → outline → scene → prompt → render — kills visual imagination at every handoff. The prompt-translation agent never experienced the creative process; it just maps symbols. The result looks mechanically correct but emotionally flat.
+
+**Why two?** The sweet spot: one agent (Opus) holds the entire creative arc — reading, decomposing, scoring, designing, coloring, and writing the English prompt in a single sustained context. A second agent (Haiku) handles the purely mechanical render step. Creative coherence stays intact; execution stays cheap.
+
+**The compiler lesson.** An earlier 3-agent version inserted a "compiler" between creative and render to structure free-form drafts. In practice it was an information loss point — it normalized away the creative agent's intentional choices. Removing it improved output quality immediately.
+
+**Style as constraint, not decoration.** The style guide isn't aesthetic preference — it encodes three production techniques discovered from manual Notion AI illustration work:
+1. **Physical degradation compensation** — abstract verbs become concrete material states (cracked, dissolved, faded)
+2. **CSS-level coordinate layout** — `Left Zone / Upper area` positional words lock composition
+3. **Inline coloring** — hex values sit next to the component noun, never collected at the end
+
+These three rules are the difference between "AI clip art" and illustrations that hold up in a published article.
+
 ## Prerequisites
 
 - [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code) installed (`claude` command available)
