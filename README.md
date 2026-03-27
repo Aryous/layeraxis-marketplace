@@ -8,7 +8,7 @@ It ships three plugins with different levels of automation:
 
 | Plugin | What it does | Automation |
 |--------|-------------|------------|
-| **layeraxis-v4-3agent** | Two-agent pipeline (creative → render). Reads an article, designs all illustrations, and batch-generates images via Gemini. | Full auto |
+| **layeraxis-v4-2agent** | Two-agent pipeline (creative → render). Reads an article, designs all illustrations, and batch-generates images via Gemini. | Full auto |
 | **article-illustration-prompt** | Outputs a single image prompt you can paste into any image generator. | Interactive |
 | **layeraxis-v4-5agent** | Five-agent gated pipeline with per-stage checkpoints. More control, more knobs. | Full auto |
 
@@ -33,20 +33,20 @@ The visual style follows a "Digital Rationalism × Human-Centered Minimalism" gu
 claude plugin marketplace add /path/to/layeraxis-marketplace
 
 # 2. Install a plugin (pick one)
-claude plugin install layeraxis-v4-3agent@layeraxis-marketplace --scope project
+claude plugin install layeraxis-v4-2agent@layeraxis-marketplace --scope project
 
 # 3. Run it — type the trigger in a Claude Code session
-/layeraxis-v4-3agent:layeraxis-orchestrator
+/layeraxis-v4-2agent:layeraxis-orchestrator
 ```
 
 ## Choosing a plugin
 
-### layeraxis-v4-3agent (recommended)
+### layeraxis-v4-2agent (recommended)
 
 Two-agent automated pipeline. Best for full-article illustration in one shot.
 
 - Pipeline: `creative-agent (Opus) → render-agent (Haiku)`
-- Trigger: `/layeraxis-v4-3agent:layeraxis-orchestrator`
+- Trigger: `/layeraxis-v4-2agent:layeraxis-orchestrator`
 - Outputs: `imgs-spec/` directory with designed prompts + generated PNGs
 
 ### article-illustration-prompt (lightweight)
@@ -70,7 +70,7 @@ layeraxis-marketplace/
   .claude-plugin/
     marketplace.json              # Marketplace manifest
   plugins/
-    layeraxis-v4-3agent/
+    layeraxis-v4-2agent/
       .claude-plugin/plugin.json
       agents/                     # creative-agent, render-agent
       skills/                     # orchestrator, creative, render-and-integrate
@@ -87,10 +87,10 @@ layeraxis-marketplace/
 
 ```bash
 # Update
-claude plugin update layeraxis-v4-3agent
+claude plugin update layeraxis-v4-2agent
 
 # Uninstall
-claude plugin uninstall layeraxis-v4-3agent
+claude plugin uninstall layeraxis-v4-2agent
 
 # Remove the marketplace entirely
 claude plugin marketplace remove layeraxis-marketplace

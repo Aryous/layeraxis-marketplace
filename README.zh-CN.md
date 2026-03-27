@@ -8,7 +8,7 @@
 
 | 插件 | 功能 | 自动化程度 |
 |------|------|-----------|
-| **layeraxis-v4-3agent** | 双 Agent 流水线（creative → render），读取文章后自动完成全部配图设计与生成 | 全自动 |
+| **layeraxis-v4-2agent** | 双 Agent 流水线（creative → render），读取文章后自动完成全部配图设计与生成 | 全自动 |
 | **article-illustration-prompt** | 输出单张配图提示词，可粘贴到任意图像生成器使用 | 交互式 |
 | **layeraxis-v4-5agent** | 五 Agent 门控流水线，每个阶段可独立检查和重放 | 全自动 |
 
@@ -33,20 +33,20 @@
 claude plugin marketplace add /path/to/layeraxis-marketplace
 
 # 2. 安装插件（选一个）
-claude plugin install layeraxis-v4-3agent@layeraxis-marketplace --scope project
+claude plugin install layeraxis-v4-2agent@layeraxis-marketplace --scope project
 
 # 3. 在 Claude Code 会话中输入触发词
-/layeraxis-v4-3agent:layeraxis-orchestrator
+/layeraxis-v4-2agent:layeraxis-orchestrator
 ```
 
 ## 插件选择指南
 
-### layeraxis-v4-3agent（推荐）
+### layeraxis-v4-2agent（推荐）
 
 双 Agent 自动化流水线，适合一篇文章一次性完成全部配图。
 
 - 流水线：`creative-agent (Opus) → render-agent (Haiku)`
-- 触发词：`/layeraxis-v4-3agent:layeraxis-orchestrator`
+- 触发词：`/layeraxis-v4-2agent:layeraxis-orchestrator`
 - 产出：`imgs-spec/` 目录下的设计稿 + 生成的 PNG 图片
 
 ### article-illustration-prompt（轻量）
@@ -70,7 +70,7 @@ layeraxis-marketplace/
   .claude-plugin/
     marketplace.json              # Marketplace 清单
   plugins/
-    layeraxis-v4-3agent/
+    layeraxis-v4-2agent/
       .claude-plugin/plugin.json
       agents/                     # creative-agent, render-agent
       skills/                     # orchestrator, creative, render-and-integrate
@@ -87,10 +87,10 @@ layeraxis-marketplace/
 
 ```bash
 # 更新
-claude plugin update layeraxis-v4-3agent
+claude plugin update layeraxis-v4-2agent
 
 # 卸载
-claude plugin uninstall layeraxis-v4-3agent
+claude plugin uninstall layeraxis-v4-2agent
 
 # 移除整个 marketplace
 claude plugin marketplace remove layeraxis-marketplace

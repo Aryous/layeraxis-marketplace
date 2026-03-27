@@ -9,8 +9,8 @@
   },
   "plugins": [
     {
-      "name": "layeraxis-v4-3agent",
-      "source": "./plugins/layeraxis-v4-3agent",
+      "name": "layeraxis-v4-2agent",
+      "source": "./plugins/layeraxis-v4-2agent",
       "description": "LayerAxis V4 two-agent pipeline (creative → render). Reads an article, designs illustrations, and batch-generates images.",
       "keywords": ["illustration", "pipeline", "image-generation", "layeraxis"],
       "category": "content-creation"
