@@ -2,7 +2,7 @@
   "name": "layeraxis-marketplace",
   "metadata": {
     "description": "LayerAxis illustration workflow plugins — a 2-agent automated pipeline, a 5-agent gated pipeline, and a standalone prompt generator.",
-    "version": "0.2.0"
+    "version": "0.3.0"
   },
   "owner": {
     "name": "Aryous"
@@ -11,8 +11,8 @@
     {
       "name": "layeraxis-v4-2agent",
       "source": "./plugins/layeraxis-v4-2agent",
-      "description": "LayerAxis V4 two-agent pipeline (creative → render). Reads an article, designs illustrations, and batch-generates images.",
-      "keywords": ["illustration", "pipeline", "image-generation", "layeraxis"],
+      "description": "LayerAxis V4 two-agent pipeline (creative → render). Reads an article, designs illustrations, and batch-generates images via a Gemini or Codex engine.",
+      "keywords": ["illustration", "pipeline", "image-generation", "layeraxis", "gemini", "codex"],
       "category": "content-creation"
     },
     {

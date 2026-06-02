@@ -16,9 +16,20 @@
 
 1. 你给 Claude 一篇文章（Markdown / URL / 直接粘贴）
 2. **Creative Agent**（Opus）通读全文，判断哪些位置需要配图，为每张图设计构图、隐喻、配色和英文提示词
-3. **Render Agent**（Haiku）调用 Gemini 图像 API 批量生成图片，并将结果插回文章
+3. **Render Agent**（Haiku）调用出图脚本批量生成图片，并将结果插回文章
 
 视觉风格遵循「数字理性主义 × 以人为本的极简主义」设计指南 —— 低饱和配色、CSS 级精确排版、用物理材质隐喻替代抽象剪贴画。
+
+### 出图引擎
+
+出图阶段（`layeraxis-v4-2agent`）支持两种可互换的图像引擎，由 `imgs-spec/plan.lock.yaml` 的 `generation.model` 字段选择：
+
+| `model` 取值 | 引擎 | 前提 |
+|-------------|------|------|
+| `gemini` / `gemini-*`（默认） | Gemini 图像 API | `GOOGLE_API_KEY` |
+| `codex` / `gpt-image-*` | [Codex CLI](https://developers.openai.com/codex/cli/) 内置 `image_gen` 工具 | 本机已安装 `codex` 并登录 |
+
+codex 引擎通过 `codex exec` 调用 Codex 内置的 `image_gen` 工具，出图后会先校验确有图片产出再落盘；尺寸由 aspect ratio 推导（无像素旋钮）。
 
 ## 设计思路
 
@@ -42,8 +53,11 @@
 ## 前置条件
 
 - 已安装 [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code)（`claude` 命令可用）
-- 出图阶段需要 `GOOGLE_API_KEY`（Gemini 图像生成权限）
-  - 放在项目根目录 `.env` 文件中，或通过环境变量导出：`export GOOGLE_API_KEY=...`
+- 出图阶段需要**两种引擎之一**：
+  - **Gemini**（默认）：具备 Gemini 图像生成权限的 `GOOGLE_API_KEY`
+    - 放在项目根目录 `.env` 文件中，或通过环境变量导出：`export GOOGLE_API_KEY=...`
+  - **Codex**：本机已安装 [Codex CLI](https://developers.openai.com/codex/cli/) 并登录
+    - 在 `imgs-spec/plan.lock.yaml` 中设置 `generation.model: codex`
 
 ## 快速开始
 

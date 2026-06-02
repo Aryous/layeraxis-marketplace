@@ -16,9 +16,20 @@ It ships three plugins with different levels of automation:
 
 1. You give Claude an article (Markdown / URL / pasted text)
 2. The **creative agent** (Opus) reads the full article, identifies where illustrations add value, and designs each image — composition, metaphor, color palette, English prompt
-3. The **render agent** (Haiku) runs a generation script against Gemini's image API and inserts the results back into the article
+3. The **render agent** (Haiku) runs a generation script that produces the images and inserts the results back into the article
 
 The visual style follows a "Digital Rationalism × Human-Centered Minimalism" guide — muted palettes, CSS-level layout precision, physical-material metaphors instead of abstract clip art.
+
+### Render engines
+
+The render step (`layeraxis-v4-2agent`) supports two interchangeable image engines, selected by the `generation.model` field in `imgs-spec/plan.lock.yaml`:
+
+| `model` value | Engine | Requirement |
+|---------------|--------|-------------|
+| `gemini` / `gemini-*` (default) | Gemini image API | `GOOGLE_API_KEY` |
+| `codex` / `gpt-image-*` | [Codex CLI](https://developers.openai.com/codex/cli/) `image_gen` tool | `codex` CLI installed and logged in |
+
+The codex engine drives `codex exec` to call Codex's built-in `image_gen` tool, then validates that a real image was produced before saving. It derives a compliant size from the aspect ratio (no pixel knob).
 
 ## Design philosophy
 
@@ -42,8 +53,11 @@ These three rules are the difference between "AI clip art" and illustrations tha
 ## Prerequisites
 
 - [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code) installed (`claude` command available)
-- A `GOOGLE_API_KEY` with Gemini image generation access (for the render step)
-  - Put it in a `.env` file at your project root, or `export GOOGLE_API_KEY=...`
+- For the render step, **one** of the two engines:
+  - **Gemini** (default): a `GOOGLE_API_KEY` with Gemini image generation access
+    - Put it in a `.env` file at your project root, or `export GOOGLE_API_KEY=...`
+  - **Codex**: the [Codex CLI](https://developers.openai.com/codex/cli/) installed and logged in
+    - Set `generation.model: codex` in `imgs-spec/plan.lock.yaml`
 
 ## Quick start
 

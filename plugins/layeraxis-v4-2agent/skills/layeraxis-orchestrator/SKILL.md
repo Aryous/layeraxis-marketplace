@@ -64,9 +64,9 @@ orchestrator──▶ creative ──▶ render
 | 参数 | 可选值 | 默认值 |
 | --- | --- | --- |
 | `density` | `minimal(3~6)` / `standard(5~8)` / `full(10~15)` | 模板默认 |
-| `generation.model` | `gemini-3-pro-image-preview` / `gemini-2.0-flash-preview-image-generation` / `imagen-4-ultra-generate-001` / `imagen-4-generate-001` | `gemini-3-pro-image-preview` |
+| `generation.model` | **gemini 引擎**：`gemini-3-pro-image-preview` / `gemini-2.0-flash-preview-image-generation` / `imagen-4-ultra-generate-001` / `imagen-4-generate-001`（需 `GOOGLE_API_KEY`）；**codex 引擎**：`codex`（需本机 `codex` CLI 已登录） | `gemini-3-pro-image-preview` |
 | `generation.aspect_ratio` | `1:1` / `3:4` / `4:3` / `9:16` / `16:9` | 模板默认 |
-| `generation.image_size` | `1K` / `2K` / `4K` | 模板默认 |
+| `generation.image_size` | `1K` / `2K` / `4K`（codex 引擎忽略，尺寸由 aspect 推导） | 模板默认 |
 | `style_guide` | 当前仅 `digital-rationalism` | `digital-rationalism` |
 </aside>
 

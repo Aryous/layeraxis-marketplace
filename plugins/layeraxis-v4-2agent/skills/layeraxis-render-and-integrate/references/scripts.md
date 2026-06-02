@@ -3,22 +3,36 @@
 ## 目录
 
 - [脚本位置](#脚本位置) — 文件清单
+- [引擎路由](#引擎路由) — gemini / codex 如何选择
 - [extract-and-generate.js](#extract-and-generatejs) — 批量生成（主入口）
-- [gemini-image-api.js](#gemini-image-apijs) — 单图生成（底层调用）
+- [gemini-image-api.js](#gemini-image-apijs) — 单图生成（gemini 引擎）
+- [codex-image-api.js](#codex-image-apijs) — 单图生成（codex 引擎）
 
 ---
 
 ## 脚本位置
 
 Skill 内置脚本位于 `scripts/` 目录：
-- `extract-and-generate.js` - 批量生成图片
-- `gemini-image-api.js` - Gemini API 单图生成（被 extract-and-generate.js 调用）
+- `extract-and-generate.js` - 批量生成图片（按引擎分发）
+- `gemini-image-api.js` - Gemini API 单图生成（gemini 引擎，被 extract-and-generate.js 调用）
+- `codex-image-api.js` - codex exec 单图生成（codex 引擎，被 extract-and-generate.js 调用）
+
+## 引擎路由
+
+`extract-and-generate.js` 按 `plan.lock.yaml` 的 `generation.model` 选择底层脚本：
+
+| `model` 取值 | 引擎 | 底层脚本 | 前置 |
+| --- | --- | --- | --- |
+| `gemini` / `gemini-*`（默认） | Gemini API | `gemini-image-api.js` | `GOOGLE_API_KEY` |
+| `codex` / `gpt-image-*` | codex exec image_gen | `codex-image-api.js` | 本机 `codex` CLI 已登录 |
+
+两个底层脚本输出**相同的单行 JSON 契约**（`success` / `image_path` / `generation_params` / `timestamp`），故可互换。
 
 ## extract-and-generate.js
 
 ### 功能
 
-批量读取 Markdown prompt 文件 + plan.lock.yaml，调用 Gemini API 生成图片。
+批量读取 Markdown prompt 文件 + plan.lock.yaml，按 `generation.model` 路由到 gemini 或 codex 引擎生成图片。
 
 ### 调用方式
 
@@ -30,15 +44,16 @@ node ${SKILL_DIR}/scripts/extract-and-generate.js \
 
 ### 执行流程
 
-1. **环境检查**
-   - 加载 `.env` 文件（项目根目录）
-   - 检查 `GOOGLE_API_KEY`（env 变量 → .env 文件 → 报错提示）
+1. **环境检查（引擎感知）**
+   - 加载 `.env` 文件（项目/父目录）
+   - 仅当引擎为 gemini 时检查 `GOOGLE_API_KEY`（env 变量 → .env 文件 → 报错提示）
+   - codex 引擎不要求 `GOOGLE_API_KEY`，改由 `codex-image-api.js` 在 codex 缺失/未登录时返回明确错误
 
 2. **读取全局参数**
    - 从 `imgs-spec/plan.lock.yaml` 提取生成参数：
-     - `generation.model`（当前仅支持 gemini）
+     - `generation.model`（路由引擎：gemini / codex，见上文「引擎路由」）
      - `generation.aspect_ratio`（如 16:9）
-     - `generation.image_size`（如 2K）
+     - `generation.image_size`（如 2K；codex 引擎忽略，尺寸由 aspect 推导）
      - `negative_prompt`（可选，缺失时为空）
 
 3. **读取 Prompt 文件**
@@ -49,8 +64,8 @@ node ${SKILL_DIR}/scripts/extract-and-generate.js \
      - 若无 `## English Prompt` 标题，fallback 到整个 body（兼容旧格式）
      - 若检测到 legacy frontmatter，自动剥离
 
-4. **调用 Gemini API**
-   - 对每个 prompt 调用 `gemini-image-api.js`
+4. **调用引擎脚本**
+   - 对每个 prompt 调用 `gemini-image-api.js` 或 `codex-image-api.js`（按引擎）
    - 失败时重试一次
    - 生成的图片保存为同名 `.png` 文件（如 `01-metaphor-xxx.md` → `01-metaphor-xxx.png`）
 
@@ -116,3 +131,45 @@ node ${SKILL_DIR}/scripts/gemini-image-api.js \
 - 调试单张图片生成
 - 手动重新生成某张失败的图片
 - 测试新的 prompt 模板
+
+## codex-image-api.js
+
+### 功能
+
+通过 `codex exec --json --sandbox danger-full-access` 驱动 Codex CLI 内置的 `image_gen` 工具（gpt-image 系）生成单张图片。与 `gemini-image-api.js` 同构：相同 CLI 接口、相同单行 JSON 输出契约。
+
+### 调用方式（直接使用）
+
+```bash
+node ${SKILL_DIR}/scripts/codex-image-api.js \
+  --prompt "Wide horizontal composition..." \
+  --aspect "16:9" \
+  --model codex \
+  --output output.png
+```
+
+### 参数
+
+| 参数 | 必需 | 说明 |
+| --- | --- | --- |
+| `--prompt` | ✅ | 英文提示词 |
+| `--output` | ✅ | 输出文件路径（含 shell 元字符会被拒绝） |
+| `--aspect` | ❌ | 画面比例（默认 16:9）；codex 据此推导合规尺寸 |
+| `--negative` | ❌ | 负面提示词（拼入指令文本，codex 无原生 negative 参数） |
+| `--model` | ❌ | 透传记录（默认 codex） |
+| `--timeout` | ❌ | codex exec 超时（毫秒，默认 300000） |
+| `--size` / `--quality` | ❌ | 接受但忽略（仅为与 gemini 脚本命令行兼容） |
+
+### 前置
+
+本机已安装 `codex` CLI 并登录。未安装/未登录时返回 `error_kind: codex_not_installed`。
+
+### 行为要点
+
+- 指令硬约束 agent：只用内置 `image_gen`，禁外部 API、禁伪造、**禁 sips 等后处理**（保留原始尺寸）。
+- 出图后校验 `$CODEX_HOME/generated_images/<thread_id>/` 有 PNG，或 tool_calls 含 cp/mv 到目标；再做 `stat` + PNG magic 头校验。
+- 失败按 `error_kind` 分类：`codex_not_installed` / `timeout` / `no_image_gen_tool_use` / `output_missing` / `invalid_png` / `agent_refused` 等。
+
+### 使用场景
+
+同 `gemini-image-api.js`：通常经 `extract-and-generate.js` 批量调用，单独使用仅为调试/重生成。

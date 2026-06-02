@@ -21,15 +21,15 @@ Handle execution and integration only:
 - `imgs-spec/plan.lock.yaml`
 - `imgs-spec/NN-*.md` with non-empty `## English Prompt`
 - `${SKILL_DIR}/scripts/extract-and-generate.js`
-- `${SKILL_DIR}/scripts/gemini-image-api.js`
-- `GOOGLE_API_KEY` available in environment
+- The engine atomic script, selected by `generation.model` in `plan.lock.yaml`:
+  - gemini / `gemini-*` (default) → `${SKILL_DIR}/scripts/gemini-image-api.js`, needs `GOOGLE_API_KEY`
+  - codex / `gpt-image-*` → `${SKILL_DIR}/scripts/codex-image-api.js`, needs `codex` CLI logged in
 
 ## Workflow
 
-1. Preflight API key:
-   - If `process.env.GOOGLE_API_KEY` exists, continue.
-   - Otherwise check `.env` in current or parent directories for `GOOGLE_API_KEY=...`.
-   - If still missing, stop and remind user to add `.env` or env var.
+1. Preflight (engine-aware — read `generation.model` from `plan.lock.yaml` first):
+   - gemini engine: if `process.env.GOOGLE_API_KEY` exists continue; else check `.env` in current/parent dirs for `GOOGLE_API_KEY=...`; if still missing, stop and remind user.
+   - codex engine: ensure `codex` CLI is available (installed and logged in). No `GOOGLE_API_KEY` needed. `extract-and-generate.js` also enforces this and surfaces `error_kind: codex_not_installed`.
 2. Run:
    - `node ${SKILL_DIR}/scripts/extract-and-generate.js --input imgs-spec/ --output imgs-spec/`
 3. Check `imgs-spec/generation-summary.json` and collect failures.

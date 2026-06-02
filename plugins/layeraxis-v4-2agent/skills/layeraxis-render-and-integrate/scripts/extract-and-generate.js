@@ -151,14 +151,17 @@ function loadEnvFile() {
     }
     if (process.env.GOOGLE_API_KEY) break;
   }
+}
 
-  if (!process.env.GOOGLE_API_KEY) {
-    console.error("Error: Missing GOOGLE_API_KEY.");
-    console.error("Checked .env in current/parent directories and skill directory.");
-    console.error("Set it via environment variable or create a .env file with:");
-    console.error("  GOOGLE_API_KEY=your_key");
-    process.exit(1);
-  }
+// Gemini 引擎才需要 GOOGLE_API_KEY；codex 引擎依赖本机 codex CLI 登录态。
+function requireGeminiKey() {
+  if (process.env.GOOGLE_API_KEY) return;
+  console.error("Error: Missing GOOGLE_API_KEY for the gemini engine.");
+  console.error("Checked .env in current/parent directories and skill directory.");
+  console.error("Set it via environment variable or create a .env file with:");
+  console.error("  GOOGLE_API_KEY=your_key");
+  console.error("(Or set plan.lock.yaml generation.model to codex to use the codex engine.)");
+  process.exit(1);
 }
 
 function resolveLockPath(inputDir, lockArg) {
@@ -232,42 +235,62 @@ function loadPromptFiles(inputDir) {
   });
 }
 
-function buildGenerateCommand(apiScript, promptFile, outputPath, generation) {
-  return [
+const GEMINI_TIMEOUT_MS = 180000;
+const CODEX_TIMEOUT_MS = 300000;
+
+// 引擎路由：按 plan.lock.yaml 的 generation.model 决定走哪个原子脚本。
+// model = codex / codex-* / gpt-image-*  → codex exec 引擎
+// 其余（gemini / gemini-* / 默认）        → Gemini API 引擎
+function resolveEngine(model) {
+  const m = String(model || "").trim().toLowerCase();
+  if (m === "codex" || m.startsWith("codex") || m.startsWith("gpt-image")) {
+    return { engine: "codex", script: "codex-image-api.js", timeoutMs: CODEX_TIMEOUT_MS };
+  }
+  return { engine: "gemini", script: "gemini-image-api.js", timeoutMs: GEMINI_TIMEOUT_MS };
+}
+
+function buildGenerateCommand(apiScript, promptFile, outputPath, generation, engine) {
+  const negative = promptFile.negativePrompt || generation.negative;
+  const parts = [
     "node",
     JSON.stringify(apiScript),
     "--prompt",
     JSON.stringify(promptFile.prompt),
-    promptFile.negativePrompt || generation.negative
-      ? `--negative ${JSON.stringify(promptFile.negativePrompt || generation.negative)}`
-      : "",
+    negative ? `--negative ${JSON.stringify(negative)}` : "",
     "--aspect",
     JSON.stringify(generation.aspect),
-    "--quality",
-    JSON.stringify(generation.quality),
     "--model",
     JSON.stringify(generation.model),
     "--output",
     JSON.stringify(outputPath),
-  ]
-    .filter(Boolean)
-    .join(" ");
+  ];
+  // Gemini 有 image-size/quality 旋钮；codex 由 aspect 决定尺寸，无对应参数。
+  if (engine.engine === "gemini") {
+    parts.push("--quality", JSON.stringify(generation.quality));
+  }
+  // codex 单张耗时长，把内部超时传给原子脚本（execSync 再留缓冲）。
+  if (engine.engine === "codex") {
+    parts.push("--timeout", String(engine.timeoutMs));
+  }
+  return parts.filter(Boolean).join(" ");
 }
 
 function generateSingleImage(promptFile, outputDir, generation) {
   const scriptDir = path.dirname(__filename || __dirname);
-  const apiScript = path.join(scriptDir, "gemini-image-api.js");
+  const engine = resolveEngine(generation.model);
+  const apiScript = path.join(scriptDir, engine.script);
   const outputPath = path.join(path.resolve(outputDir), `${promptFile.slug}.png`);
 
   if (!promptFile.prompt) {
     return { success: false, error: "Empty prompt body in markdown" };
   }
 
-  const cmd = buildGenerateCommand(apiScript, promptFile, outputPath, generation);
+  const cmd = buildGenerateCommand(apiScript, promptFile, outputPath, generation, engine);
 
   try {
     const result = execSync(cmd, {
-      timeout: 180000,
+      // 给原子脚本的内部超时留 30s 缓冲，让内部超时先以干净错误退出。
+      timeout: engine.timeoutMs + 30000,
       encoding: "utf-8",
       stdio: ["pipe", "pipe", "pipe"],
     });
@@ -304,9 +327,13 @@ function main() {
     process.exit(1);
   }
 
+  const engineInfo = resolveEngine(lockInfo.generation.model);
+  if (engineInfo.engine === "gemini") {
+    requireGeminiKey();
+  }
   console.log(`Using plan lock: ${lockInfo.lockPath}`);
   console.log(
-    `Generation config: model=${lockInfo.generation.model}, aspect=${lockInfo.generation.aspect}, size=${lockInfo.generation.quality}`
+    `Generation config: engine=${engineInfo.engine}, model=${lockInfo.generation.model}, aspect=${lockInfo.generation.aspect}, size=${lockInfo.generation.quality}`
   );
   console.log(`Processing ${promptFiles.length} illustrations...`);
   console.log("");

@@ -1,7 +1,7 @@
 {
   "name": "layeraxis-v4-2agent",
-  "description": "LayerAxis V4 two-agent illustration pipeline (creative → render).",
-  "version": "0.2.0",
+  "description": "LayerAxis V4 two-agent illustration pipeline (creative → render). Render engine selectable: Gemini or Codex.",
+  "version": "0.3.0",
   "author": {
     "name": "Aryous"
   },
