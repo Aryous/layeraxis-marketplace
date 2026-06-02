@@ -2,7 +2,7 @@
   "name": "layeraxis-marketplace",
   "metadata": {
     "description": "LayerAxis illustration workflow plugins — a 2-agent automated pipeline, a 5-agent gated pipeline, and a standalone prompt generator.",
-    "version": "0.3.1"
+    "version": "0.4.0"
   },
   "owner": {
     "name": "Aryous"

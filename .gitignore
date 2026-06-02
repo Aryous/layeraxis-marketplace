@@ -3,6 +3,10 @@
 
 # Local skills (not part of marketplace)
 .claude/
+.codex/*
+!.codex/
+!.codex/agents/
+!.codex/agents/*.toml
 .baoyu-skills/
 
 # Test articles
@@ -18,5 +22,4 @@ docs/
 archive/
 
 # Misc
-AGENTS.md
 project_understanding.md

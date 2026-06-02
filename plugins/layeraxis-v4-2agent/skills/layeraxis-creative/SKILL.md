@@ -1,7 +1,7 @@
 ---
 name: layeraxis-creative
 description: >
-  LayerAxis V4 创作技能。仅用于 /配图-layeraxis 或 /illustration-layeraxis 的创作阶段。基于本文件的核心工作流与外部风格指南，只输出 imgs-spec/creative-draft.md。
+  LayerAxis V4 创作技能。用于 LayerAxis pipeline、/配图-layeraxis、/illustration-layeraxis 或 Codex 中的文章配图创作阶段。基于本文件的核心工作流与风格指南输出 outline.md 与 imgs-spec/NN-slug.md。
 ---
 
 ## 输入

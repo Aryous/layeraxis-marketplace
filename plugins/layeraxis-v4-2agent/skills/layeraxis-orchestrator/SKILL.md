@@ -1,9 +1,9 @@
 ---
 name: layeraxis-orchestrator
-description: LayerAxis V4 配图编排技能。调度 creative-agent-layeraxis → render-agent-layeraxis 两级流水线。
+description: LayerAxis V4 多 Agent 配图编排技能。Claude Code 下调度 creative-agent-layeraxis → render-agent-layeraxis；Codex 下 spawn layeraxis-creative → layeraxis-render subagents。
 ---
 ## 概览
-orchestrator 是一条两级 agent 流水线的编排层，自身不生成内容，只负责初始化、参数确认、调度和失败回退。
+orchestrator 是一条多 Agent 配图流水线的编排层，只负责初始化、参数确认、阶段调度、Gate 验收和失败回退。creative/render 阶段必须交给独立 agent，避免污染主线程上下文。
 ```
 orchestrator──▶ creative ──▶ render
                     │            │
@@ -13,6 +13,10 @@ orchestrator──▶ creative ──▶ render
 **两种模式**：
 - **`auto`**：全流程连续运行，不暂停。
 - **`review`**：creative 产出后暂停，等待人工反馈再继续。
+
+**运行时兼容**：
+- **Claude Code**：优先使用 `agents/creative-agent-layeraxis.md` 和 `agents/render-agent-layeraxis.md` 中定义的 subagent。
+- **Codex**：spawn Codex subagents 执行阶段。优先使用 `.codex/agents/layeraxis-creative.toml` 与 `.codex/agents/layeraxis-render.toml` 定义的 custom agents；若 custom agents 不可见，也必须 spawn 独立 worker subagents 并注入同等阶段指令。不要静默降级为当前 agent 执行 creative/render。
 ---
 
 ## 输入与输出
@@ -97,10 +101,16 @@ orchestrator──▶ creative ──▶ render
 
 ---
 
-### Step 3 · 调用 creative-agent-layeraxis · 创意设计
+### Step 3 · creative 阶段 · 创意设计
 
 **执行逻辑：**
-使用工具调用 `creative-agent-layeraxis`。向它提供以下清晰的上下文和指令：
+按运行时选择执行方式：
+
+- **Claude Code**：如 `creative-agent-layeraxis` subagent 可用，调用它。
+- **Codex**：spawn `layeraxis-creative` custom agent；若 custom agent 不可见，spawn 独立 worker subagent，并在任务说明中要求它读取 `layeraxis-creative` 技能、只产出 `outline.md` 和 `NN-*.md`、不得出图。
+- **不可 spawn 时**：停止并向用户说明 Codex subagent 能力不可用，不要在 orchestrator 主上下文中代做 creative。
+
+向 creative 阶段提供以下清晰的上下文和指令：
 1. **提供原文路径**：需要配图的文章源文件路径。
 2. **传递参数**：从 `plan.lock.yaml` 中读取并传递硬约束：
    - `density`
@@ -140,9 +150,13 @@ Gate A 通过后暂停，等待人工反馈。
 
 ---
 
-### Step 4 · 调用 render-agent-layeraxis · 出图与回写
+### Step 4 · render 阶段 · 出图与回写
 
 按结构化工件逐张调用图像生成 API，执行出图并回写摘要。
+
+- **Claude Code**：如 `render-agent-layeraxis` subagent 可用，调用它。
+- **Codex**：Gate A 通过后 spawn `layeraxis-render` custom agent；若 custom agent 不可见，spawn 独立 worker subagent，并在任务说明中要求它读取 `layeraxis-render-and-integrate` 技能、只执行出图与回写、不得重设计提示词。
+- **不可 spawn 时**：停止并向用户说明 Codex subagent 能力不可用，不要在 orchestrator 主上下文中代做 render。
 
 |  |  |
 | --- | --- |
@@ -157,7 +171,7 @@ Gate A 通过后暂停，等待人工反馈。
 
 ---
 
-## Subagent 交互矩阵
+## 阶段交互矩阵
 
 |  | plan.lock | outline.md | NN-*.md | *.png | summary.json |
 | --- | --- | --- | --- | --- | --- |
@@ -222,4 +236,5 @@ Gate A 通过后暂停，等待人工反馈。
 
 - 本技能为**并行实验流**，与现有 `spec-v4-illustrator` 主流程独立运行，互不影响。
 - 两者的 `imgs-spec/` 目录结构一致，下游消费方无需区分来源。
-- 触发词严格限定：`/配图-layeraxis`、`/illustration-layeraxis`。
+- Claude Code 可用 `/配图-layeraxis`、`/illustration-layeraxis` 或 `/layeraxis-v4-2agent:layeraxis-orchestrator` 触发。
+- Codex 可通过安装插件后显式选择 `layeraxis-v4-2agent` / `layeraxis-orchestrator`，或直接提出文章配图请求触发；该请求即表示允许 LayerAxis 按本技能说明 spawn creative/render subagents。

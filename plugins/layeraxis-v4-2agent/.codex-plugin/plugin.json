@@ -1,0 +1,37 @@
+{
+  "name": "layeraxis-v4-2agent",
+  "version": "0.4.0",
+  "description": "LayerAxis V4 two-stage article illustration workflow. Reads an article, designs illustration prompts, and batch-generates images through Gemini or Codex.",
+  "author": {
+    "name": "Aryous"
+  },
+  "repository": "https://github.com/Aryous/layeraxis-marketplace",
+  "license": "MIT",
+  "keywords": [
+    "illustration",
+    "article",
+    "image-generation",
+    "layeraxis",
+    "gemini",
+    "codex"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "LayerAxis V4 2-Agent",
+    "shortDescription": "Design and generate article illustrations.",
+    "longDescription": "LayerAxis V4 2-Agent packages a two-stage article illustration workflow for Codex: a creative planning skill writes outline and prompt specs, then a render skill generates PNGs through Gemini or Codex.",
+    "developerName": "Aryous",
+    "category": "Design",
+    "capabilities": [
+      "Read",
+      "Write",
+      "Interactive"
+    ],
+    "defaultPrompt": [
+      "Use LayerAxis to illustrate this article.",
+      "Generate the missing LayerAxis images.",
+      "Create article illustration prompts."
+    ],
+    "brandColor": "#3B82F6"
+  }
+}

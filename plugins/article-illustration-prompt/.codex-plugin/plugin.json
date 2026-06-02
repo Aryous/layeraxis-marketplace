@@ -1,0 +1,36 @@
+{
+  "name": "article-illustration-prompt",
+  "version": "0.2.0",
+  "description": "Generate publication-ready image prompts for article illustrations using the LayerAxis visual style.",
+  "author": {
+    "name": "LayerAxis Team"
+  },
+  "repository": "https://github.com/Aryous/layeraxis-marketplace",
+  "license": "MIT",
+  "keywords": [
+    "illustration",
+    "prompt",
+    "article",
+    "style-guide",
+    "layeraxis"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Article Illustration Prompt",
+    "shortDescription": "Write strong prompts for article illustrations.",
+    "longDescription": "Article Illustration Prompt turns article concepts into structured image prompts using the Digital Rationalism and Human-Centered Minimalism style system.",
+    "developerName": "LayerAxis Team",
+    "category": "Design",
+    "capabilities": [
+      "Read",
+      "Write",
+      "Interactive"
+    ],
+    "defaultPrompt": [
+      "Create an illustration prompt for this article.",
+      "Turn this concept into a LayerAxis prompt.",
+      "Design one article illustration."
+    ],
+    "brandColor": "#14B8A6"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "name": "layeraxis-v4-5agent",
+  "version": "0.2.0",
+  "description": "SPEC V4 gated article illustration workflow with lock, outline, scene, prompt, and render stages.",
+  "author": {
+    "name": "LayerAxis Team"
+  },
+  "repository": "https://github.com/Aryous/layeraxis-marketplace",
+  "license": "MIT",
+  "keywords": [
+    "illustration",
+    "article",
+    "image-generation",
+    "layeraxis",
+    "spec-v4"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "LayerAxis V4 5-Agent",
+    "shortDescription": "Run a gated multi-stage illustration workflow.",
+    "longDescription": "LayerAxis V4 5-Agent exposes the legacy SPEC V4 gated workflow for Codex. It splits article illustration into lock, outline, scene, prompt, and render stages for inspection and replay.",
+    "developerName": "LayerAxis Team",
+    "category": "Design",
+    "capabilities": [
+      "Read",
+      "Write",
+      "Interactive"
+    ],
+    "defaultPrompt": [
+      "Run the SPEC V4 illustration workflow.",
+      "Continue the gated illustration pipeline.",
+      "Render the SPEC V4 prompt files."
+    ],
+    "brandColor": "#6366F1"
+  }
+}
