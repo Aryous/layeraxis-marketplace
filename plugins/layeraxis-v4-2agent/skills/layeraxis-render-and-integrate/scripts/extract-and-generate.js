@@ -36,9 +36,29 @@ function parseArgs(argv) {
       case "--lock":
         args.lock = argv[++i];
         break;
+      case "--only":
+        // 逗号分隔的 id/slug，例：--only "04" 或 --only "01,03"
+        args.only = argv[++i];
+        break;
+      case "--skip-existing":
+        // 跳过已存在同名 PNG（幂等续跑）；布尔旗标，不吃下一个参数
+        args.skipExisting = true;
+        break;
     }
   }
   return args;
+}
+
+// 按 --only 的 id/slug 列表过滤待生成文件
+function filterByOnly(promptFiles, only) {
+  const tokens = String(only)
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (tokens.length === 0) return promptFiles;
+  return promptFiles.filter((pf) =>
+    tokens.some((t) => pf.id === t || pf.slug === t || pf.slug.includes(t))
+  );
 }
 
 function parseValue(value) {
@@ -321,10 +341,20 @@ function main() {
   }
 
   const lockInfo = loadPlanLock(args.input, args.lock);
-  const promptFiles = loadPromptFiles(args.input);
+  let promptFiles = loadPromptFiles(args.input);
   if (promptFiles.length === 0) {
     console.error("No markdown prompt files found in input directory");
     process.exit(1);
+  }
+
+  if (args.only) {
+    const before = promptFiles.length;
+    promptFiles = filterByOnly(promptFiles, args.only);
+    if (promptFiles.length === 0) {
+      console.error(`No prompt files match --only "${args.only}" (matched 0 of ${before})`);
+      process.exit(1);
+    }
+    console.log(`--only "${args.only}": ${promptFiles.length} of ${before} selected`);
   }
 
   const engineInfo = resolveEngine(lockInfo.generation.model);
@@ -340,11 +370,28 @@ function main() {
 
   let succeeded = 0;
   let failed = 0;
+  let skipped = 0;
   const results = [];
 
   for (let index = 0; index < promptFiles.length; index++) {
     const promptFile = promptFiles[index];
     process.stdout.write(`[${index + 1}/${promptFiles.length}] ${promptFile.filename} → `);
+
+    const outputPath = path.join(outputDir, `${promptFile.slug}.png`);
+    if (args.skipExisting && fs.existsSync(outputPath)) {
+      console.log("⏭ skipped (exists)");
+      skipped++;
+      results.push({
+        id: promptFile.id,
+        filename: promptFile.filename,
+        prompt_file: promptFile.filepath,
+        success: true,
+        skipped: true,
+        image_path: outputPath,
+        error: null,
+      });
+      continue;
+    }
 
     if (promptFile.hasFrontmatter) {
       process.stdout.write("legacy-frontmatter-detected → ");
@@ -375,7 +422,7 @@ function main() {
   }
 
   console.log("");
-  console.log(`Summary: ${succeeded} succeeded, ${failed} failed`);
+  console.log(`Summary: ${succeeded} succeeded, ${failed} failed${skipped ? `, ${skipped} skipped` : ""}`);
 
   const summary = {
     plan_lock: lockInfo.lockPath,
@@ -383,6 +430,7 @@ function main() {
     total: promptFiles.length,
     succeeded,
     failed,
+    skipped,
     results,
   };
 

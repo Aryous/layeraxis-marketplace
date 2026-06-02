@@ -33,7 +33,9 @@ Handle execution and integration only:
 2. Run:
    - `node ${SKILL_DIR}/scripts/extract-and-generate.js --input imgs-spec/ --output imgs-spec/`
 3. Check `imgs-spec/generation-summary.json` and collect failures.
-4. Retry strategy is handled by script; report final success/failure clearly.
+4. The script retries each image once internally. **Do NOT re-run the whole batch blindly** — that regenerates already-succeeded images and (on the codex engine) burns quota. If some images failed, re-run ONLY the missing/failed ones:
+   - `--skip-existing` to regenerate only what's missing, or
+   - `--only "04"` / `--only "01,03"` to target specific images by id/slug.
 5. Insert markdown image links into the article at appropriate positions.
 
 ## Hard Constraints

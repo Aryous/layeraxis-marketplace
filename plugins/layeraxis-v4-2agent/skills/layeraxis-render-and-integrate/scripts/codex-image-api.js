@@ -180,16 +180,21 @@ function deriveToolName(item) {
 }
 
 // --- 校验 ---
-function verifyImageGenWasInvoked(threadId) {
-  if (!threadId) return { ok: false, reason: "no thread id" };
+// 找出本次 thread 在 codex 默认产出区生成的 PNG（多张时取最新）。
+// 这是 wrapper 自己接管「交接」的依据：不依赖 codex agent 去 cp。
+function findGeneratedPng(threadId) {
+  if (!threadId) return null;
   const dir = path.join(codexHome(), "generated_images", threadId);
   try {
-    const entries = fs.readdirSync(dir);
-    const pngs = entries.filter((e) => e.toLowerCase().endsWith(".png"));
-    if (pngs.length === 0) return { ok: false, reason: `no PNG in ${dir}` };
-    return { ok: true };
-  } catch (e) {
-    return { ok: false, reason: `cannot read ${dir}: ${e.code || e.message}` };
+    const pngs = fs
+      .readdirSync(dir)
+      .filter((e) => e.toLowerCase().endsWith(".png"))
+      .map((e) => path.join(dir, e));
+    if (pngs.length === 0) return null;
+    pngs.sort((a, b) => fs.statSync(b).mtimeMs - fs.statSync(a).mtimeMs);
+    return pngs[0];
+  } catch {
+    return null;
   }
 }
 
@@ -354,9 +359,20 @@ async function main() {
       throw err;
     }
 
-    const ver = verifyImageGenWasInvoked(run.threadId);
-    if (!ver.ok && !findCpToTarget(run.toolCalls, outputPath)) {
-      const err = new Error(`image_gen was not invoked: ${ver.reason}`);
+    // 交接由 wrapper 接管（确定性），不依赖 codex agent 自己 cp：
+    // 若 thread 在 generated_images 留下了 PNG，就由我们把它拷到 --output。
+    // agent 的 cp 仅作兜底（generated_images 找不到、但 agent 已自行落到目标）。
+    const genPng = findGeneratedPng(run.threadId);
+    let handoff;
+    if (genPng) {
+      fs.copyFileSync(genPng, outputPath);
+      handoff = "wrapper";
+    } else if (fs.existsSync(outputPath) || findCpToTarget(run.toolCalls, outputPath)) {
+      handoff = "agent";
+    } else {
+      const err = new Error(
+        `image_gen produced no PNG in generated_images/${run.threadId} and agent did not cp to target`
+      );
       err.kind = "no_image_gen_tool_use";
       throw err;
     }
@@ -372,6 +388,7 @@ async function main() {
         engine: "codex",
         aspect_ratio: aspect,
         thread_id: run.threadId,
+        handoff,
         bytes,
         elapsed_seconds: Math.round((Date.now() - startEpoch) / 1000),
         usage: run.usage || null,

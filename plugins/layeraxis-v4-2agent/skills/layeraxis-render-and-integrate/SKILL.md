@@ -73,7 +73,8 @@ node ${SKILL_DIR}/scripts/extract-and-generate.js \
 ## 硬规则
 
 - 不修改 `NN-*.md` 的上游设计内容，除非用户明确要求。
-- 单图失败先自动重试，再记录到 summary。
+- 单图失败先自动重试（脚本内置一次），再记录到 summary。
+- **失败补图不要重跑整批**：用 `--skip-existing`（只补缺失）或 `--only "04"`（定点）补，否则会重生成已成功的图、在 codex 引擎下成倍烧配额。
 - 优先根据 `generation-summary.json` 回报结果，不口头猜测。
 
 ## 参考文件（按需加载）

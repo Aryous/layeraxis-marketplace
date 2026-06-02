@@ -42,6 +42,18 @@ node ${SKILL_DIR}/scripts/extract-and-generate.js \
   --output imgs-spec/
 ```
 
+### 参数
+
+| 参数 | 必需 | 说明 |
+| --- | --- | --- |
+| `--input` | ✅ | 含 `NN-*.md` + `plan.lock.yaml` 的目录 |
+| `--output` | ✅ | 图片输出目录 |
+| `--lock` | ❌ | plan.lock 路径（默认 `<input>/plan.lock.yaml`） |
+| `--only` | ❌ | 只生成指定图，逗号分隔 id/slug，例：`--only "04"` 或 `--only "01,03"`。**定点补图用** |
+| `--skip-existing` | ❌ | 跳过已存在同名 PNG（幂等续跑）。**重跑只补缺失、不重烧已成功的** |
+
+> **重要（避免烧配额）**：默认会重生成目录内全部图。**重跑或失败补图时务必加 `--skip-existing`**（只补缺失），或用 `--only` 定点指定，否则会把已成功的图全部重生成一遍——codex 引擎下这会成倍消耗配额。
+
 ### 执行流程
 
 1. **环境检查（引擎感知）**
@@ -167,7 +179,8 @@ node ${SKILL_DIR}/scripts/codex-image-api.js \
 ### 行为要点
 
 - 指令硬约束 agent：只用内置 `image_gen`，禁外部 API、禁伪造、**禁 sips 等后处理**（保留原始尺寸）。
-- 出图后校验 `$CODEX_HOME/generated_images/<thread_id>/` 有 PNG，或 tool_calls 含 cp/mv 到目标；再做 `stat` + PNG magic 头校验。
+- **交接由 wrapper 接管（确定性）**：codex exec 返回后，脚本自己从 `$CODEX_HOME/generated_images/<thread_id>/` 取最新 PNG 拷到 `--output`，**不依赖 codex agent 自己 cp**（agent 自觉 cp 时灵时不灵，曾导致末尾图反复失败）。agent 的 cp 仅作兜底。输出 JSON 的 `generation_params.handoff` 标记 `wrapper`（脚本拷）或 `agent`（兜底）。
+- 校验：确认 generated_images 有 PNG 或目标已落地；再做 `stat` + PNG magic 头校验。
 - 失败按 `error_kind` 分类：`codex_not_installed` / `timeout` / `no_image_gen_tool_use` / `output_missing` / `invalid_png` / `agent_refused` 等。
 
 ### 使用场景
