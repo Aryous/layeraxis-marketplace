@@ -147,6 +147,10 @@ claude plugin uninstall layeraxis-v4-2agent
 claude plugin marketplace remove layeraxis-marketplace
 ```
 
+## References
+
+- [JimLiu/baoyu-skills](https://github.com/JimLiu/baoyu-skills/tree/main) — reference for agent skill marketplace organization and selective skill installation patterns.
+
 ## License
 
 [MIT](LICENSE)
